@@ -1,73 +1,95 @@
-import React,{Fragment,useState,useEffect} from 'react'
-import toast from "react-hot-toast"
-import {useDispatch,useSelector} from "react-redux";
-import {Link, useNavigate} from "react-router-dom";
-import {getLogin} from "../../store/User/user-action"
-import { userActions } from '../../store/User/user-slice';
-import LoadingSpinner from "../LoadingSpinner"
-import "../../css/Login.css"
+import React, { Fragment, useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { getLogin } from "../../store/User/user-action";
+import { userActions } from "../../store/User/user-slice";
+import LoadingSpinner from "../LoadingSpinner";
+import "../../css/Login.css";
 
 const Login = () => {
-    const [email,setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
-    const dispatch = useDispatch()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    const {isAuthenticated, errors, loading} = useSelector((state)=>state.user)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const submitHandler = (e) =>{
-        e.preventDefault();
-        dispatch(getLogin({email,password}))
+  const { isAuthenticated, errors, loading } = useSelector(
+    (state) => state.user
+  );
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    dispatch(getLogin({ email, password }));
+  };
+
+  useEffect(() => {
+    if (errors && errors.length > 0) {
+      toast.error(errors);
+      dispatch(userActions.clearErrors()); // ✅ FIXED
     }
 
-      useEffect(()=>{
-        if(errors && errors.length >0){
-            toast.error(errors);
-            dispatch(userActions.clearErrors)
-        }else if (isAuthenticated){
-            navigate("/");
-            toast.success("User logged in successfully")
-        }
-    },[isAuthenticated,errors,navigate])
+    if (isAuthenticated) {
+      toast.success("User logged in successfully");
+      navigate("/");
+    }
+  }, [errors, isAuthenticated, dispatch, navigate]);
+
   return (
     <Fragment>
-      <div className='row wrapper'>
-        {loading && <LoadingSpinner/>}
-        {!loading &&(
-            <div className='col-10 col-lg-5'>
-                <form onSubmit={submitHandler}>
-                    <h1 className='mb-3'> Login</h1>
-                    <div className='form-group'>
-                        <label htmlFor='email_field'>Email</label>
-                        <input type='email' id='email_field' className='form-control' value={email}
-                        onChange={(e) => setEmail(e.target.value)}/>
-                    </div>
+      <div className="row wrapper">
+        {loading && <LoadingSpinner />}
 
-                    <div className='form-group'>
-                        <label htmlFor='password_field'>Password</label>
-                        <input type='password' id='password_field' className='form-control' value={password}
-                        onChange={(e) => setPassword(e.target.value)}/>
-                    </div>
+        {!loading && (
+          <div className="col-10 col-lg-5">
+            <form onSubmit={submitHandler}>
+              <h1 className="mb-3">Login</h1>
 
-                    <Link to="/user/forgotPassword"  className='float-right mb-4'>
-                    Forgot Password
-                    </Link>
+              <div className="form-group">
+                <label htmlFor="email_field">Email</label>
+                <input
+                  type="email"
+                  id="email_field"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
 
-                    <button id='login_button' type='submit' className='loginbutton btn-block py-3'>
-                     LOGIN
-                    </button>
+              <div className="form-group">
+                <label htmlFor="password_field">Password</label>
+                <input
+                  type="password"
+                  id="password_field"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
 
-                    <Link to="/signup" className='float-right mt-3'>
-                    New User?
-                    </Link>
-                  
-                </form>
-            </div>
+              <Link to="/user/forgotPassword" className="float-right mb-4">
+                Forgot Password?
+              </Link>
+
+              <button
+                id="login_button"
+                type="submit"
+                className="loginbutton btn-block py-3"
+              >
+                LOGIN
+              </button>
+
+              <Link to="/signup" className="float-right mt-3">
+                New User?
+              </Link>
+            </form>
+          </div>
         )}
-
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
