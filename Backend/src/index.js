@@ -12,19 +12,14 @@ dotenv.config();
 
 const app = express();
 
-/* ✅ FIXED CORS (PRODUCTION SAFE) */
+/* ✅ SAFE CORS (NO wildcard route) */
 app.use(
   cors({
-    origin: [
-      process.env.ORIGIN_ACCESS_URL, // Netlify URL
-    ],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    origin: process.env.ORIGIN_ACCESS_URL,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
-
-/* ✅ IMPORTANT: allow preflight */
-app.options("*", cors());
 
 /* ✅ Body parsers */
 app.use(express.json({ limit: "100mb" }));
